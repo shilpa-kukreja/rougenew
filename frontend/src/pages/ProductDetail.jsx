@@ -603,19 +603,19 @@ const filterImagesByColorAndGender = (images) => {
               />
 
             </div> */}
-            <div className="max-w-[600px] flex flex-row gap-5 mt-[15vh] w-full mx-auto">
+            <div className="w-full flex flex-row gap-5 mt-[15vh]  justify-end">
   {selectedColor === 'Black' ? (
     <>
       <img
         src={bottomBlackMaleImage}
         alt="Black Male"
-        className="w-full h-[90vh] object-contain"
+        className=" w-[50%] object-contain"
       />
       {hasExtendedImages && bottomBlackFemaleImage && (
         <img
           src={bottomBlackFemaleImage}
           alt="Black Female"
-          className="w-full h-[90vh] object-contain"
+          className=" w-[50%] object-contain"
         />
       )}
     </>
@@ -624,13 +624,13 @@ const filterImagesByColorAndGender = (images) => {
       <img
         src={bottomBeigeMaleImage}
         alt="Beige Male"
-        className="w-full h-[90vh] object-contain"
+        className=" h-[90vh] object-contain"
       />
       {hasExtendedImages && bottomBeigeFemaleImage && (
         <img
           src={bottomBeigeFemaleImage}
           alt="Beige Female"
-          className="w-full h-[90vh] object-contain"
+          className=" h-[90vh] object-contain"
         />
       )}
     </>
