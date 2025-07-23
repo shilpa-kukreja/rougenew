@@ -8,6 +8,8 @@ import 'swiper/css/pagination';
 import 'swiper/css/navigation';
 import { assets } from '../assets/assets';
 import { addToCart } from '../utils/shopifyCart';
+import { useContext } from 'react';
+import { ShopContext } from '../Context/ShopContext';
 
 
 // const GRAPHQL_URL = 'https://naj9vi-zx.myshopify.com/api/2024-04/graphql.json';
@@ -39,6 +41,8 @@ const ProductDetail = () => {
   const [bottomBeigeMaleImage, setBottomBeigeMaleImage] = useState(null);
   const [bottomBeigeFemaleImage, setBottomBeigeFemaleImage] = useState(null);
   const [hasExtendedImages, setHasExtendedImages] = useState(false);
+  const [usdToCurrencyRate, setUsdToCurrencyRate] = useState(1);
+  const { currency } = useContext(ShopContext);
 
   // Extract available colors from product variants
   const colors = [];
@@ -57,6 +61,53 @@ const ProductDetail = () => {
       });
     });
   }
+
+  useEffect(() => {
+    if (currency.toLowerCase() === "inr") {
+      setUsdToCurrencyRate(1);
+    } else {
+      fetch(
+        "https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/inr.json"
+      )
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.inr && data.inr[currency.toLowerCase()]) {
+            setUsdToCurrencyRate(data.inr[currency.toLowerCase()]);
+          } else {
+            console.warn("Currency not found:", currency);
+            setUsdToCurrencyRate(1);
+          }
+        })
+        .catch((err) => {
+          console.error("Currency fetch error:", err);
+          setUsdToCurrencyRate(1);
+        });
+    }
+  }, [currency]);
+
+
+  // useEffect(() => {
+  //   if (currency.toLowerCase() === "inr") {
+  //     setUsdToCurrencyRate(1); // No conversion needed
+  //   } else {
+  //     fetch("https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/usd.json")
+  //       .then((res) => res.json())
+  //       .then((data) => {
+  //         const rate = data?.inr?.[currency.toLowerCase()];
+  //         if (rate) {
+  //           setUsdToCurrencyRate(rate);
+  //         } else {
+  //           console.warn("Currency not found:", currency);
+  //           setUsdToCurrencyRate(1);
+  //         }
+  //       })
+  //       .catch((err) => {
+  //         console.error("Currency fetch error:", err);
+  //         setUsdToCurrencyRate(1);
+  //       });
+  //   }
+  // }, [currency]);
+
 
   useEffect(() => {
     const fetchProduct = async () => {
@@ -169,66 +220,66 @@ const ProductDetail = () => {
   //   setFemaleBeigeImages(femaleBeige);
   // };
 
- // In your filterImagesByColorAndGender function:
-const filterImagesByColorAndGender = (images) => {
-  const maleBlack = [], femaleBlack = [], maleBeige = [], femaleBeige = [];
-  const bottomBlackMale = [], bottomBlackFemale = [], bottomBeigeMale = [], bottomBeigeFemale = [];
-  
-  // First 8 images for male black (1-8)
-  for (let i = 0; i < 8; i++) {
-    if (images[i]?.node?.url) maleBlack.push(images[i].node.url);
-  }
-  
-  // Next 8 images for female black (9-16)
-  for (let i = 8; i < 16; i++) {
-    if (images[i]?.node?.url) femaleBlack.push(images[i].node.url);
-  }
-  
-  // Next 8 images for male beige (17-24)
-  for (let i = 16; i < 24; i++) {
-    if (images[i]?.node?.url) maleBeige.push(images[i].node.url);
-  }
-  
-  // Next 8 images for female beige (25-32)
-  for (let i = 24; i < 32; i++) {
-    if (images[i]?.node?.url) femaleBeige.push(images[i].node.url);
-  }
+  // In your filterImagesByColorAndGender function:
+  const filterImagesByColorAndGender = (images) => {
+    const maleBlack = [], femaleBlack = [], maleBeige = [], femaleBeige = [];
+    const bottomBlackMale = [], bottomBlackFemale = [], bottomBeigeMale = [], bottomBeigeFemale = [];
 
-  // Handle special cases for bottom images only
-  if (images.length >= 38) {
-    // If there are 38+ images
-    bottomBlackMale.push(images[33]?.node?.url || maleBlack[7]);
-    bottomBlackFemale.push(images[34]?.node?.url || femaleBlack[7]);
-    bottomBeigeMale.push(images[35]?.node?.url || maleBeige[7]);
-    bottomBeigeFemale.push(images[36]?.node?.url || femaleBeige[7]);
-  } else if (images.length >= 36) {
-    // If there are exactly 36 images - only use male images
-    bottomBlackMale.push(images[33]?.node?.url || maleBlack[7]);
-    bottomBlackFemale.push(null); // No female image for 36
-    bottomBeigeMale.push(images[34]?.node?.url || maleBeige[7]);
-    bottomBeigeFemale.push(null); // No female image for 36
-  } else {
-    // Default case - use the last image from each category
-    bottomBlackMale.push(maleBlack[7]);
-    bottomBlackFemale.push(femaleBlack[7]);
-    bottomBeigeMale.push(maleBeige[7]);
-    bottomBeigeFemale.push(femaleBeige[7]);
-  }
+    // First 8 images for male black (1-8)
+    for (let i = 0; i < 8; i++) {
+      if (images[i]?.node?.url) maleBlack.push(images[i].node.url);
+    }
 
-  setMaleBlackImages(maleBlack);
-  setFemaleBlackImages(femaleBlack);
-  setMaleBeigeImages(maleBeige);
-  setFemaleBeigeImages(femaleBeige);
-  
-  // Set the bottom images separately
-  setBottomBlackMaleImage(bottomBlackMale[0]);
-  setBottomBlackFemaleImage(bottomBlackFemale[0]);
-  setBottomBeigeMaleImage(bottomBeigeMale[0]);
-  setBottomBeigeFemaleImage(bottomBeigeFemale[0]);
-  
-  // Store whether we have 38+ images
-  setHasExtendedImages(images.length >= 38);
-};
+    // Next 8 images for female black (9-16)
+    for (let i = 8; i < 16; i++) {
+      if (images[i]?.node?.url) femaleBlack.push(images[i].node.url);
+    }
+
+    // Next 8 images for male beige (17-24)
+    for (let i = 16; i < 24; i++) {
+      if (images[i]?.node?.url) maleBeige.push(images[i].node.url);
+    }
+
+    // Next 8 images for female beige (25-32)
+    for (let i = 24; i < 32; i++) {
+      if (images[i]?.node?.url) femaleBeige.push(images[i].node.url);
+    }
+
+    // Handle special cases for bottom images only
+    if (images.length >= 38) {
+      // If there are 38+ images
+      bottomBlackMale.push(images[33]?.node?.url || maleBlack[7]);
+      bottomBlackFemale.push(images[34]?.node?.url || femaleBlack[7]);
+      bottomBeigeMale.push(images[35]?.node?.url || maleBeige[7]);
+      bottomBeigeFemale.push(images[36]?.node?.url || femaleBeige[7]);
+    } else if (images.length >= 36) {
+      // If there are exactly 36 images - only use male images
+      bottomBlackMale.push(images[33]?.node?.url || maleBlack[7]);
+      bottomBlackFemale.push(null); // No female image for 36
+      bottomBeigeMale.push(images[34]?.node?.url || maleBeige[7]);
+      bottomBeigeFemale.push(null); // No female image for 36
+    } else {
+      // Default case - use the last image from each category
+      bottomBlackMale.push(maleBlack[7]);
+      bottomBlackFemale.push(femaleBlack[7]);
+      bottomBeigeMale.push(maleBeige[7]);
+      bottomBeigeFemale.push(femaleBeige[7]);
+    }
+
+    setMaleBlackImages(maleBlack);
+    setFemaleBlackImages(femaleBlack);
+    setMaleBeigeImages(maleBeige);
+    setFemaleBeigeImages(femaleBeige);
+
+    // Set the bottom images separately
+    setBottomBlackMaleImage(bottomBlackMale[0]);
+    setBottomBlackFemaleImage(bottomBlackFemale[0]);
+    setBottomBeigeMaleImage(bottomBeigeMale[0]);
+    setBottomBeigeFemaleImage(bottomBeigeFemale[0]);
+
+    // Store whether we have 38+ images
+    setHasExtendedImages(images.length >= 38);
+  };
   const handleColorChange = (color) => {
     setSelectedColor(color);
     setMaleIndex(0);
@@ -278,11 +329,18 @@ const filterImagesByColorAndGender = (images) => {
   }
 
 
+  // const selectedProduct = {
+  //   name: product.title,
+  //   description: product.descriptionHtml,
+  //   price: parseFloat(selectedVariant?.price.amount || '0'),
+  //   discountPrice: parseFloat(selectedVariant?.price.amount || '0') * 0.9,
+  // };
+
   const selectedProduct = {
     name: product.title,
     description: product.descriptionHtml,
-    price: parseFloat(selectedVariant?.price.amount || '0'),
-    discountPrice: parseFloat(selectedVariant?.price.amount || '0') * 0.9,
+    price: parseFloat(selectedVariant?.price.amount || '0') * usdToCurrencyRate,
+    discountPrice: parseFloat(selectedVariant?.price.amount || '0') * usdToCurrencyRate * 0.9,
   };
 
   const variant = {
@@ -297,14 +355,23 @@ const filterImagesByColorAndGender = (images) => {
   const firstImages = maleImages;
   const secondImages = femaleImages;
 
+  // const convertPrice = (price, currency) => {
+  //   return new Intl.NumberFormat('en-US', {
+  //     style: 'currency',
+  //     currency: currency || 'USD'
+  //   }).format(price);
+  // };
+
   const convertPrice = (price, currency) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency || 'USD'
+    return new Intl.NumberFormat('INR', {
+      // style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 2
     }).format(price);
   };
 
-  const currency = selectedVariant?.price.currencyCode || 'USD';
+  // const currency = selectedVariant?.price.currencyCode || 'USD';
 
   return (
     <>
@@ -350,56 +417,56 @@ const filterImagesByColorAndGender = (images) => {
             </SwiperSlide>
 
             {/* Static images - matching desktop view */}
-          {/* Mobile View Swiper Slides */}
-{selectedColor === 'Black' ? (
-  <>
-    <SwiperSlide className="block md:hidden">
-      <div className="w-full">
-        <img
-          src={bottomBlackMaleImage}
-          alt="Black Male"
-          className="w-full max-h-[400px] object-contain"
-        />
-      </div>
-    </SwiperSlide>
+            {/* Mobile View Swiper Slides */}
+            {selectedColor === 'Black' ? (
+              <>
+                <SwiperSlide className="block md:hidden">
+                  <div className="w-full">
+                    <img
+                      src={bottomBlackMaleImage}
+                      alt="Black Male"
+                      className="w-full max-h-[400px] object-contain"
+                    />
+                  </div>
+                </SwiperSlide>
 
-    {hasExtendedImages && bottomBlackFemaleImage && (
-      <SwiperSlide className="block md:hidden">
-        <div className="w-full">
-          <img
-            src={bottomBlackFemaleImage}
-            alt="Black Female"
-            className="w-full max-h-[400px] object-contain"
-          />
-        </div>
-      </SwiperSlide>
-    )}
-  </>
-) : (
-  <>
-    <SwiperSlide className="block md:hidden">
-      <div className="w-full">
-        <img
-          src={bottomBeigeMaleImage}
-          alt="Beige Male"
-          className="w-full max-h-[400px] object-contain"
-        />
-      </div>
-    </SwiperSlide>
+                {hasExtendedImages && bottomBlackFemaleImage && (
+                  <SwiperSlide className="block md:hidden">
+                    <div className="w-full">
+                      <img
+                        src={bottomBlackFemaleImage}
+                        alt="Black Female"
+                        className="w-full max-h-[400px] object-contain"
+                      />
+                    </div>
+                  </SwiperSlide>
+                )}
+              </>
+            ) : (
+              <>
+                <SwiperSlide className="block md:hidden">
+                  <div className="w-full">
+                    <img
+                      src={bottomBeigeMaleImage}
+                      alt="Beige Male"
+                      className="w-full max-h-[400px] object-contain"
+                    />
+                  </div>
+                </SwiperSlide>
 
-    {hasExtendedImages && bottomBeigeFemaleImage && (
-      <SwiperSlide className="block md:hidden">
-        <div className="w-full">
-          <img
-            src={bottomBeigeFemaleImage}
-            alt="Beige Female"
-            className="w-full max-h-[400px] object-contain"
-          />
-        </div>
-      </SwiperSlide>
-    )}
-  </>
-)}
+                {hasExtendedImages && bottomBeigeFemaleImage && (
+                  <SwiperSlide className="block md:hidden">
+                    <div className="w-full">
+                      <img
+                        src={bottomBeigeFemaleImage}
+                        alt="Beige Female"
+                        className="w-full max-h-[400px] object-contain"
+                      />
+                    </div>
+                  </SwiperSlide>
+                )}
+              </>
+            )}
 
           </Swiper>
         </div>
@@ -410,6 +477,18 @@ const filterImagesByColorAndGender = (images) => {
           <div className='lg:col-span-3 product_cont'>
             <div className='sticky lg:fixed w-full top-[50%] transform translate-y-[-50%]'>
               <h4 className='text-[8px] uppercase text-[#A9ABAE] font-medium'>{selectedProduct.name}</h4>
+
+              {/* <div className="price-display mt-[-10px]">
+                {selectedProduct.discountPrice !== selectedProduct.price ? (
+                  <span className="text-[8px] text-[#A9ABAE]">
+                    {convertPrice(selectedProduct.price, currency)} {currency}
+                  </span>
+                ) : (
+                  <span className="text-[8px] text-[#A9ABAE]">
+                    {convertPrice(selectedProduct.price, currency)}
+                  </span>
+                )}
+              </div> */}
 
               <div className="price-display mt-[-10px]">
                 {selectedProduct.discountPrice !== selectedProduct.price ? (
@@ -512,35 +591,36 @@ const filterImagesByColorAndGender = (images) => {
               {/* Chart Details */}
               <div className='p-0 m-0 mt-[-10px]'>
                 <button onClick={() => setChartDetails(!chartDetails)} className='cursor-pointer text-[8px] text-[#A9ABAE] rounded-lg'>
-                  Chart Details {chartDetails ? "-" : "+"}
+                  SIZE  CHART  {chartDetails ? "-" : "+"}
                 </button>
               </div>
             </div>
           </div>
-
           {chartDetails && (
             <div className='fixed top-[50%] transform translate-y-[-50%] flex flex-row left-0 w-[100%] z-50 text-[10px] text-[#d2d2d4]'>
               <div className="z-50 left-4 bg-black/50 w-fit p-6 rounded-lg relative">
                 <div className='sm:flex space-y-4 sm:space-y-0 gap-16 sm:items-center sm:justify-center'>
-                  <div className='bg-[#7f7f7f50] w-[250px] z-50 left-4 relative border'>
-                    <button className="absolute top-0 right-0 text-[10px] border w-6 h-6 font-bold bg-white text-black z-50"
-                      onClick={() => setChartDetails(false)}>
+                  <div className='bg-[#7f7f7f50] w-[250px] z-50 sm:left-4 left-0 relative border'>
+                    <button
+                      className="absolute top-0 right-0 text-[10px] border w-6 h-6 font-bold bg-white text-black z-50"
+                      onClick={() => setChartDetails(false)}
+                    >
                       ✖
                     </button>
-                    {variant.images.length === 6 ? (
-                      <img
-                        src={variant.images[5]}
-                        alt={selectedProduct.name}
-                        className='object-cover h-[132px] w-full'
-                      />
-                    ) : (
-                      <img
-                        src={variant.images[3]}
-                        alt={selectedProduct.name}
-                        className='object-cover h-[132px] w-full'
-                      />
-                    )}
+
+                    <img
+                      src={
+                        product.images.edges.length >= 38
+                          ? product.images.edges[37]?.node?.url
+                          : product.images.edges.length >= 36
+                            ? product.images.edges[35]?.node?.url
+                            : product.images.edges[0]?.node?.url 
+                      }
+                      alt={product.title}
+                      className='object-cover h-[132px] w-full'
+                    />
                   </div>
+
                   <div className="sm:max-w-4xl max-w-3xl border border-gray-300 shadow-md">
                     <table className="w-full text-center">
                       <thead>
@@ -569,6 +649,8 @@ const filterImagesByColorAndGender = (images) => {
               </div>
             </div>
           )}
+
+
 
           {/* Right Media Panel - Desktop */}
           <div className='lg:col-span-7 relative lg:block hidden'>
@@ -604,38 +686,38 @@ const filterImagesByColorAndGender = (images) => {
 
             </div> */}
             <div className="w-full flex flex-row gap-5 mt-[15vh]  justify-end">
-  {selectedColor === 'Black' ? (
-    <>
-      <img
-        src={bottomBlackMaleImage}
-        alt="Black Male"
-        className=" w-[50%] object-contain"
-      />
-      {hasExtendedImages && bottomBlackFemaleImage && (
-        <img
-          src={bottomBlackFemaleImage}
-          alt="Black Female"
-          className=" w-[50%] object-contain"
-        />
-      )}
-    </>
-  ) : (
-    <>
-      <img
-        src={bottomBeigeMaleImage}
-        alt="Beige Male"
-        className=" h-[90vh] object-contain"
-      />
-      {hasExtendedImages && bottomBeigeFemaleImage && (
-        <img
-          src={bottomBeigeFemaleImage}
-          alt="Beige Female"
-          className=" h-[90vh] object-contain"
-        />
-      )}
-    </>
-  )}
-</div>
+              {selectedColor === 'Black' ? (
+                <>
+                  <img
+                    src={bottomBlackMaleImage}
+                    alt="Black Male"
+                    className=" w-[50%] object-contain"
+                  />
+                  {hasExtendedImages && bottomBlackFemaleImage && (
+                    <img
+                      src={bottomBlackFemaleImage}
+                      alt="Black Female"
+                      className=" w-[50%] object-contain"
+                    />
+                  )}
+                </>
+              ) : (
+                <>
+                  <img
+                    src={bottomBeigeMaleImage}
+                    alt="Beige Male"
+                    className=" h-[90vh] object-contain"
+                  />
+                  {hasExtendedImages && bottomBeigeFemaleImage && (
+                    <img
+                      src={bottomBeigeFemaleImage}
+                      alt="Beige Female"
+                      className=" h-[90vh] object-contain"
+                    />
+                  )}
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>

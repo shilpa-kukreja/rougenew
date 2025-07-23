@@ -39,11 +39,11 @@ const SearchResults = () => {
                 const productId = product.id?.split("/").pop();
             return (
               <Link to={`/product/${productId}`} key={product.id} className="group">
-                <div className="p-4  rounded hover:shadow-md transition duration-300 ">
+                <div className="p-4 h-full rounded hover:shadow-md transition duration-300 ">
                   <img
                     src={imageUrl}
                     alt={product.title}
-                    className="w-full  object-cover rounded"
+                    className="h-full m-auto object-cover rounded"
                   />
                   <h2 className="mt-3 text-[11px] uppercase text-[#A9ABAE] truncate">
                     {product.title}

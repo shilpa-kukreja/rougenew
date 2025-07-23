@@ -170,6 +170,7 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { IoIosArrowRoundBack } from "react-icons/io";
 import { assets } from "../assets/assets";
 
 const SHOPIFY_STORE_URL = "https://q3uepe-ic.myshopify.com";
@@ -316,6 +317,11 @@ const Login = () => {
         </form>
       </div>
       </div>
+      </div>
+      <div className='sm:px-10 px-0 fixed top-15 right-5 z-50'>
+        <Link to="/products" className='flex items-center justify-center text-[#A9ABAE] hover:underline text-sm'>
+          <IoIosArrowRoundBack className='text-xl cursor-pointer' />
+        </Link>
       </div>
     </div>
   );

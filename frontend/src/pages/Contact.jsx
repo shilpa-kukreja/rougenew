@@ -67,7 +67,7 @@ const Contact = () => {
   };
 
   return (
-    <div className='w-10/12 h-[75vh] m-auto pb-10 pt-5'>
+    <div className='w-10/12 sm:h-[75vh] h-[100%] m-auto pb-10 pt-5'>
       <p><strong className='text-xl font-medium block text-[#A9ABAE] text-center mb-6'>CONTACT US</strong></p>
       <p><strong className='text-xs text-center mb-10 block text-[#A9ABAE]'>Have any questions? We'd love to hear from you.</strong></p>
 
