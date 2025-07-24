@@ -610,9 +610,9 @@ const ProductDetail = () => {
 
                     <img
                       src={
-                        product.images.edges.length >= 38
+                        product.images.edges.length >= 39
                           ? product.images.edges[37]?.node?.url
-                          : product.images.edges.length >= 36
+                          : product.images.edges.length >= 37
                             ? product.images.edges[35]?.node?.url
                             : product.images.edges[0]?.node?.url 
                       }
@@ -622,7 +622,7 @@ const ProductDetail = () => {
                   </div>
 
                   <div className="sm:max-w-4xl max-w-3xl border border-gray-300 shadow-md">
-                    <table className="w-full text-center">
+                    {/* <table className="w-full text-center">
                       <thead>
                         <tr className="text-[8px]">
                           <th className="py-1">Ref</th>
@@ -643,7 +643,18 @@ const ProductDetail = () => {
                           </tr>
                         ))}
                       </tbody>
-                    </table>
+                    </table> */}
+                    <img
+                      src={
+                        product.images.edges.length >= 39
+                          ? product.images.edges[38]?.node?.url
+                          : product.images.edges.length >= 37
+                            ? product.images.edges[36]?.node?.url
+                            : product.images.edges[0]?.node?.url 
+                      }
+                      alt={product.title}
+                      className='object-cover h-[132px] w-full'
+                    />
                   </div>
                 </div>
               </div>
